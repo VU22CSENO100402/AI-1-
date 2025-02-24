@@ -1,0 +1,32 @@
+def dfs(x, y, z, jug_x, jug_y, visited):
+    if jug_x == z or jug_y == z:
+        return True
+
+    if (jug_x, jug_y) in visited:
+        return False
+
+    visited.add((jug_x, jug_y))
+
+    if dfs(x, y, z, x, jug_y, visited):
+        return True
+    if dfs(x, y, z, jug_x, y, visited):
+        return True
+    if dfs(x, y, z, 0, jug_y, visited):
+        return True
+    if dfs(x, y, z, jug_x, 0, visited):
+        return True
+    if dfs(x, y, z, jug_x - min(jug_x, y), jug_y + min(jug_x, y), visited):
+        return True
+    if dfs(x, y, z, jug_x + min(jug_y, x), jug_y - min(jug_y, x), visited):
+        return True
+
+    return False
+
+x = 4
+y = 3
+z = 2
+
+if dfs(x, y, z, 0, 0, set()):
+    print(f"Yes, it is possible to measure {z} liters.")
+else:
+    print(f"No, it is not possible to measure {z} liters.")
