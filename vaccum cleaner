@@ -1,0 +1,75 @@
+import random
+
+class VacuumCleaner:
+    def __init__(self, grid_size):
+        self.grid_size = grid_size
+        self.grid = [[random.choice([0, 1]) for _ in range(grid_size)] for _ in range(grid_size)]  # 0 = clean, 1 = dirty
+        self.position = [random.randint(0, grid_size-1), random.randint(0, grid_size-1)]  # Starting position of vacuum
+        self.cleaned = 0
+
+    def print_grid(self):
+        for row in self.grid:
+            print(row)
+
+    def move(self, direction):
+        """Move the vacuum in a given direction"""
+        if direction == "up" and self.position[0] > 0:
+            self.position[0] -= 1
+        elif direction == "down" and self.position[0] < self.grid_size - 1:
+            self.position[0] += 1
+        elif direction == "left" and self.position[1] > 0:
+            self.position[1] -= 1
+        elif direction == "right" and self.position[1] < self.grid_size - 1:
+            self.position[1] += 1
+
+    def clean(self):
+        """Cleans the current position"""
+        x, y = self.position
+        if self.grid[x][y] == 1:  # If the current position has dirt
+            self.grid[x][y] = 0
+            self.cleaned += 1
+            print(f"Cleaning at position: {self.position} - Dirt cleaned!")
+        else:
+            print(f"Already clean at position: {self.position}")
+
+    def find_closest_dirt(self):
+        """Find the closest dirt spot in the grid"""
+        min_distance = float('inf')
+        closest_spot = None
+
+        for i in range(self.grid_size):
+            for j in range(self.grid_size):
+                if self.grid[i][j] == 1:  # If there's dirt at the spot
+                    distance = abs(self.position[0] - i) + abs(self.position[1] - j)  # Manhattan Distance
+                    if distance < min_distance:
+                        min_distance = distance
+                        closest_spot = (i, j)
+
+        return closest_spot
+
+    def run(self):
+        """Simulate the vacuum cleaner's operation"""
+        print("Starting cleaning process...\n")
+        while self.cleaned < sum(sum(row) for row in self.grid):  # While there's still dirt
+            print(f"Current position: {self.position}")
+            closest_dirt = self.find_closest_dirt()
+            if closest_dirt:
+                target_x, target_y = closest_dirt
+                if target_x > self.position[0]:
+                    self.move("down")
+                elif target_x < self.position[0]:
+                    self.move("up")
+                elif target_y > self.position[1]:
+                    self.move("right")
+                elif target_y < self.position[1]:
+                    self.move("left")
+                self.clean()
+
+            self.print_grid()  # Print the grid after cleaning
+
+        print("\nCleaning process complete!")
+
+# Simulating the vacuum cleaner
+vacuum = VacuumCleaner(grid_size=5)
+vacuum.print_grid()
+vacuum.run()
