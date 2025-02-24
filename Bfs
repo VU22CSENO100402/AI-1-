@@ -1,0 +1,34 @@
+from collections import deque
+
+def bfs(x, y, z):
+    visited = set()
+    queue = deque([(0, 0)])
+
+    while queue:
+        jug_x, jug_y = queue.popleft()
+
+        if jug_x == z or jug_y == z:
+            return True
+
+        if (jug_x, jug_y) in visited:
+            continue
+
+        visited.add((jug_x, jug_y))
+
+        queue.append((x, jug_y))
+        queue.append((jug_x, y))
+        queue.append((0, jug_y))
+        queue.append((jug_x, 0))
+        queue.append((jug_x - min(jug_x, y), jug_y + min(jug_x, y)))
+        queue.append((jug_x + min(jug_y, x), jug_y - min(jug_y, x)))
+
+    return False
+
+x = 4
+y = 3
+z = 2
+
+if bfs(x, y, z):
+    print(f"Yes, it is possible to measure {z} liters.")
+else:
+    print(f"No, it is not possible to measure {z} liters.")
