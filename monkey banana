@@ -1,0 +1,67 @@
+from collections import deque
+
+class MonkeyBananaProblem:
+    def __init__(self, grid_size, monkey_pos, banana_pos, box_pos):
+        self.grid_size = grid_size
+        self.monkey_pos = monkey_pos
+        self.banana_pos = banana_pos
+        self.box_pos = box_pos
+
+    def is_goal(self, state):
+        return state['monkey'] == self.banana_pos
+
+    def get_neighbors(self, state):
+        neighbors = []
+        monkey_x, monkey_y = state['monkey']
+        box_x, box_y = state['box']
+
+        # Moving actions (up, down, left, right)
+        moves = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        for dx, dy in moves:
+            new_monkey = (monkey_x + dx, monkey_y + dy)
+            if 0 <= new_monkey[0] < self.grid_size and 0 <= new_monkey[1] < self.grid_size:
+                neighbors.append({'monkey': new_monkey, 'box': state['box'], 'actions': state['actions'] + [f"Move to {new_monkey}"]})
+
+        # Climb box (if monkey is at box position)
+        if (monkey_x, monkey_y) == (box_x, box_y):
+            neighbors.append({'monkey': (monkey_x, monkey_y + 1), 'box': state['box'], 'actions': state['actions'] + ['Climb box']})
+
+        # Grab banana (if monkey is at banana position)
+        if (monkey_x, monkey_y + 1) == self.banana_pos:
+            neighbors.append({'monkey': (monkey_x, monkey_y + 1), 'box': state['box'], 'actions': state['actions'] + ['Grab banana']})
+
+        return neighbors
+
+    def bfs(self):
+        initial_state = {'monkey': self.monkey_pos, 'box': self.box_pos, 'actions': []}
+        visited = set()
+        queue = deque([initial_state])
+
+        while queue:
+            state = queue.popleft()
+            if self.is_goal(state):
+                return state['actions']
+
+            visited.add(state['monkey'])
+
+            for neighbor in self.get_neighbors(state):
+                if neighbor['monkey'] not in visited:
+                    queue.append(neighbor)
+
+        return None
+
+# Example usage:
+grid_size = 5
+monkey_pos = (0, 0)
+banana_pos = (2, 2)
+box_pos = (1, 1)
+
+problem = MonkeyBananaProblem(grid_size, monkey_pos, banana_pos, box_pos)
+actions = problem.bfs()
+
+if actions:
+    print("Actions to grab the banana:")
+    for action in actions:
+        print(action)
+else:
+    print("No solution found.")
